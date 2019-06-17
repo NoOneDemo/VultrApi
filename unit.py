@@ -6,11 +6,10 @@ import requests
 
 
 class Vurltrmethod:
-    def __init__(self="", u_displayname="", u_pyname="", u_funname="", u_funparam=[""]):
+    def __init__(self="", u_displayname="", u_pyname="", u_funname=""):
         self.displayname = u_displayname
         self.pyname = u_pyname
         self.funname = u_funname
-        self.funparam = u_funparam
 
 
 def fun_printRequestsLog(u_url, u_params, u_datas, response):
@@ -25,7 +24,7 @@ def vultrGetReqeust(u_url="", u_params=""):
     userhead = {"API-Key": user_config.userkey}
     response = requests.get(u_url, params=u_params, headers=userhead)
     response.encoding = "utf-8"
-    fun_printRequestsLog(u_url, u_params, "", response)
+    fun_printRequestsLog(u_url, str(u_params), "", response)
     return response.text
 
 
@@ -34,5 +33,5 @@ def vultrPostReqeust(u_url="", u_params="", u_data=""):
     response = requests.post(u_url, params=u_params,
                              headers=userhead, data=u_data)
     response.encoding = "utf-8"
-    fun_printRequestsLog(u_url, u_params, u_data, response)
+    fun_printRequestsLog(u_url, str(u_params), str(u_data), response)
     return response.text
