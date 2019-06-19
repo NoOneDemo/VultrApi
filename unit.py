@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
-import user_config
 import requests
-
-# -*- coding: UTF-8 -*-
+import json
 
 
 class Vurltrmethod:
@@ -12,26 +10,47 @@ class Vurltrmethod:
         self.funname = u_funname
 
 
-def fun_printRequestsLog(u_url, u_params, u_datas, response):
-    if(user_config.printlog):
-        print("request: " + u_url + " --params " +
-              u_params + " --data" + u_datas)
-        print("response: " + response.text)
-    return
+def load_config():
+    with open("user_config.json", 'r') as f:
+        config = json.loads(f.read())
+    return config
 
 
-def vultrGetReqeust(u_url="", u_params=""):
-    userhead = {"API-Key": user_config.userkey}
-    response = requests.get(u_url, params=u_params, headers=userhead)
-    response.encoding = "utf-8"
-    fun_printRequestsLog(u_url, str(u_params), "", response)
-    return response.text
+def set_config(k, v):
+    config = load_config()
+    config[k] = v
+    with open("user_config.json", 'w') as json_file:
+        json_file.write(json.dumps(config, indent=4))
+    return config
 
 
-def vultrPostReqeust(u_url="", u_params="", u_data=""):
-    userhead = {"API-Key": user_config.userkey}
-    response = requests.post(u_url, params=u_params,
-                             headers=userhead, data=u_data)
-    response.encoding = "utf-8"
-    fun_printRequestsLog(u_url, str(u_params), str(u_data), response)
-    return response.text
+class UnitExt:
+    printlog = False
+    userkey = ''
+    config = load_config()
+
+    def __init__(self):
+        self.printlog = self.config['printlog']
+        self.userkey = self.config['apikey']
+
+    def fun_printRequestsLog(self, u_url, u_params, u_datas, response):
+        if(self.printlog):
+            print("request: " + u_url + " --params " +
+                  u_params + " --data" + u_datas)
+            # print("response: " + response.text)
+        return
+
+    def vultrGetReqeust(self, u_url="", u_params=""):
+        userhead = {"API-Key": self.userkey}
+        response = requests.get(u_url, params=u_params, headers=userhead)
+        response.encoding = "utf-8"
+        self.fun_printRequestsLog(u_url, str(u_params), "", response)
+        return response.text
+
+    def vultrPostReqeust(self, u_url="", u_params="", u_data=""):
+        userhead = {"API-Key": self.userkey}
+        response = requests.post(u_url, params=u_params,
+                                 headers=userhead, data=u_data)
+        response.encoding = "utf-8"
+        self.fun_printRequestsLog(u_url, str(u_params), str(u_data), response)
+        return response.text
