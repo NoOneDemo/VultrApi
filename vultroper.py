@@ -68,6 +68,7 @@ def oper_creatandstart(u_dcid=None, u_vpsplanid=None, u_snapshotid=None):
     else:
         print('new server[{}] start success'.format(serverid))
         unit.set_config('temp_serverip', server_status['main_ip'])
+        # TODO: IP Changed notification
         print('new ip {}'.format(server_status['main_ip']))
 
 
@@ -81,11 +82,10 @@ def oper_checkserverstatus(u_serverid=None):
     return dic[serverid]
 
 
-def oper_destroylastcreate():
-    if 'temp_creatseverid' not in configs.keys():
-        print('destroy error  user_config.json ->temp_creatseverid null')
-        return
-
-    serverid = configs['temp_creatseverid']
+def oper_destroylastcreate(u_serverid=None):
+    serverid = u_serverid
+    if not u_serverid:
+        serverid = configs['temp_creatseverid']
+        
     vultr.server.fun_destroy(serverid)
     print('destory server [{}]'.format(serverid))
