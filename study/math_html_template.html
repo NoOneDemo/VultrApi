@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>百位数加减法试卷</title>
+    <style>
+        @media print {
+            body { width: 210mm; margin: 10mm auto; }
+        }
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            width: 210mm;
+            margin: 10mm auto;
+            font-size: 18px;
+            background: #fff;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .info-row {
+            margin-bottom: 18px;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        .info-label {
+            display: inline-block;
+            width: 44px;
+            text-align: right;
+            margin-right: 4px;
+            white-space: nowrap;
+        }
+        .info-input {
+            display: inline-block;
+            border-bottom: 1px solid #333;
+            width: 90px;
+            height: 22px;
+            vertical-align: middle;
+            margin-right: 16px;
+        }
+        .info-input.short {
+            width: 48px;
+        }
+        .problems {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .problem {
+            width: 32%;
+            margin-bottom: 18px;
+            box-sizing: border-box;
+            padding-left: 5px;
+        }
+        .problem-num {
+            font-weight: bold;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h2>百位数加减法试卷（共50题）</h2>
+    <div class="info-row">
+        <span class="info-label">姓名：</span><span class="info-input"></span>
+        <span class="info-label">日期：</span><span class="info-input"></span>
+        <span class="info-label">分数：</span><span class="info-input short"></span>
+        <span class="info-label">时间：</span><span class="info-input short"></span>
+    </div>
+    <div class="problems">
+        {% for p in problems %}
+            <div class="problem"><span class="problem-num">{{ loop.index }}.</span> {{ p[0] }} {{ p[1] }} {{ p[2] }} = </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
