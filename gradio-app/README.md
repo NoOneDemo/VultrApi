@@ -40,3 +40,12 @@ If you would like to contribute to this project, please fork the repository and 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
+
+
+
+```bash  
+nohup python auto_restart.py > auto_restart.log 2>&1 &
+
+ps aux | grep auto_restart.py
+
+```

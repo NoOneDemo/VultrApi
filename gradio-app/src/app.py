@@ -18,7 +18,7 @@ def main():
         print_btn_html = f"""
         <button style="background:#ff9800;color:#fff;font-size:20px;font-weight:bold;padding:12px 32px;border:none;border-radius:6px;cursor:pointer;box-shadow:0 2px 8px #ccc;margin-bottom:20px;" 
             onclick="let win=window.open('about:blank','_blank');win.document.write('{safe_html}');win.document.close();win.print();">
-            🖨️ 打印本业考题
+            🖨️ 打印本页考题
         </button>
         <br>
         """
@@ -55,7 +55,7 @@ def main():
             )
 
         # 其余内容
-        math_btn = gr.Button("生成百位数加减法试卷")
+        math_btn = gr.Button("生成百位数加减法练习")
         math_html_output = gr.HTML(visible=True, elem_id="math_html_output")
         math_btn.click(fn=gen_math_html, inputs=None, outputs=math_html_output)
 
