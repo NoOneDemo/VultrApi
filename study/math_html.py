@@ -13,13 +13,17 @@ def gen_problem():
         a, b = b, a
     return a, op, b
 
-problems = [gen_problem() for _ in range(50)]
+def gen_math_html():
+    return gen_math_html_text(saveFile=True)
 
-html_head = '''<!DOCTYPE html>
+def gen_math_html_text(saveFile=False):
+    problems = [gen_problem() for _ in range(50)]
+
+    html_head = '''<!DOCTYPE html>
 <html lang="zh-cn">
 <head>
     <meta charset="UTF-8">
-    <title>百位数加减法试卷</title>
+    <title>百位数加减法习题</title>
     <style>
         @media print {
             body { width: 210mm; margin: 10mm auto; }
@@ -78,7 +82,7 @@ html_head = '''<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <h2>百位数加减法试卷</h2>
+    <h2>百位数加减法习题</h2>
     <div class="info-row">
         <span class="info-label">姓名：</span><span class="info-input"></span>
         <span class="info-label">日期：</span><span class="info-input"></span>
@@ -88,19 +92,28 @@ html_head = '''<!DOCTYPE html>
     <div class="problems">
 '''
 
-html_tail = '''
+    html_tail = '''
     </div>
 </body>
 </html>
 '''
 
-problem_html = ""
-for idx, (a, op, b) in enumerate(problems, 1):
-    problem_html += f'        <div class="problem"><span class="problem-num">{idx}.</span> {a} {op} {b} = </div>\n'
+    problem_html = ""
+    for idx, (a, op, b) in enumerate(problems, 1):
+        problem_html += f'        <div class="problem"><span class="problem-num">{idx}.</span> {a} {op} {b} = </div>\n'
 
-html = html_head + problem_html + html_tail
+    html = html_head + problem_html + html_tail
 
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-    f.write(html)
+    if saveFile:
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"试卷已保存到：{OUTPUT_FILE}")
+    else:
+    # 如果不保存到文件，直接返回 HTML 字符串
+        print("试卷内容已生成，但未保存到文件。")
 
-print("试卷已生成：百位数加减法试卷.html")
+    return html
+
+if __name__ == "__main__":
+    html = gen_math_html_text(True)
+    print("试卷已生成：百位数加减法试卷.html")
