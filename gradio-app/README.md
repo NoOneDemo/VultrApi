@@ -43,7 +43,13 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 
 
 
+
+
 ```bash  
+cd  /home/ubuntu/codersun/VultrApi/gradio-app/src 
+
+source ~/venv/bin/activate
+
 nohup python auto_restart.py > auto_restart.log 2>&1 &
 
 ps aux | grep auto_restart.py

@@ -1,119 +1,98 @@
-import random
+from paper_type import PaperType
+from html_template import get_html_head, get_html_tail
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_FILE = os.path.join(BASE_DIR, "百位数加减法试卷.html")
 
-def gen_problem():
-    op = random.choice(['+', '-'])
-    a = random.randint(1, 100)
-    b = random.randint(1, 100)
-    # 保证减法结果为正数
-    if op == '-' and a < b:
-        a, b = b, a
-    return a, op, b
+class BaseMath:
+    def __init__(self):
+        if not hasattr(self, "paper_type"):
+            raise ValueError("必须在子类中指定 paper_type")
 
-def gen_math_html():
-    return gen_math_html_text(saveFile=True)
+    def problem(self):
+        raise NotImplementedError
 
-def gen_math_html_text(saveFile=False):
-    problems = [gen_problem() for _ in range(50)]
+    def render_problems(self, problems):
+        html = ""
+        for prob in problems:
+            if len(prob) == 3:
+                a, op, b = prob
+                content = f'{a} {op} {b} = '
+            else:
+                expr, _ = prob
+                content = f'{expr} = '
+            html += f'<div class="problem-cell">{content}</div>\n'
+        return html
 
-    html_head = '''<!DOCTYPE html>
-<html lang="zh-cn">
-<head>
-    <meta charset="UTF-8">
-    <title>百位数加减法习题</title>
-    <style>
-        @media print {
-            body { width: 210mm; margin: 10mm auto; }
-        }
-        body {
-            font-family: "微软雅黑", Arial, sans-serif;
-            width: 210mm;
-            margin: 10mm auto;
-            font-size: 18px;
-            background: #fff;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .info-row {
-            margin-bottom: 18px;
-            font-size: 17px;
-            display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-        }
-        .info-label {
-            display: inline-block;
-            width: 44px;
-            text-align: right;
-            margin-right: 4px;
-            white-space: nowrap;
-        }
-        .info-input {
-            display: inline-block;
-            border-bottom: 1px solid #333;
-            width: 90px;
-            height: 22px;
-            vertical-align: middle;
-            margin-right: 16px;
-        }
-        .info-input.short {
-            width: 48px;
-        }
-        .problems {
-            display: flex;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-        .problem {
-            width: 32%;
-            margin-bottom: 18px;
-            box-sizing: border-box;
-            padding-left: 5px;
-        }
-        .problem-num {
-            font-weight: bold;
-            margin-right: 4px;
-        }
-    </style>
-</head>
-<body>
-    <h2>百位数加减法习题</h2>
-    <div class="info-row">
-        <span class="info-label">姓名：</span><span class="info-input"></span>
-        <span class="info-label">日期：</span><span class="info-input"></span>
-        <span class="info-label">分数：</span><span class="info-input short"></span>
-        <span class="info-label">时间：</span><span class="info-input short"></span>
-    </div>
-    <div class="problems">
-'''
+    def gen_html(self, n=None, saveFile=False):
+        if n is None:
+            n = self.paper_type.count
+        problems = [self.problem() for _ in range(n)]
+        html = get_html_head(
+            self.paper_type.title,
+            columns=self.paper_type.columns,
+            font_size=self.paper_type.font_size,
+            padding=self.paper_type.padding
+        ) + self.render_problems(problems) + get_html_tail()
+        if saveFile:
+            output_file = os.path.join(BASE_DIR, f"{self.paper_type.title}.html")
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(html)
+            print(f"试卷已保存到：{output_file}")
+        return html
 
-    html_tail = '''
-    </div>
-</body>
-</html>
-'''
+class SimpleMath(BaseMath):
+    paper_type = PaperType.SIMPLE
 
-    problem_html = ""
-    for idx, (a, op, b) in enumerate(problems, 1):
-        problem_html += f'        <div class="problem"><span class="problem-num">{idx}.</span> {a} {op} {b} = </div>\n'
+    def __init__(self):
+        super().__init__()
 
-    html = html_head + problem_html + html_tail
+    def problem(self):
+        import random
+        op = random.choice(['+', '-'])
+        a = random.randint(1, 100)
+        b = random.randint(1, 100)
+        if op == '-' and a < b:
+            a, b = b, a
+        return a, op, b
 
-    if saveFile:
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(html)
-        print(f"试卷已保存到：{OUTPUT_FILE}")
-    else:
-    # 如果不保存到文件，直接返回 HTML 字符串
-        print("试卷内容已生成，但未保存到文件。")
+class MixedMath(BaseMath):
+    paper_type = PaperType.MIXED
 
-    return html
+    def __init__(self):
+        super().__init__()
+
+    def problem(self):
+        import random
+        while True:
+            nums = [random.randint(1, 999) for _ in range(3)]
+            ops = [random.choice(['+', '-']) for _ in range(2)]
+            expr = f"{nums[0]} {ops[0]} {nums[1]} {ops[1]} {nums[2]}"
+            result = nums[0]
+            for i in range(2):
+                if ops[i] == '+':
+                    result += nums[i+1]
+                else:
+                    result -= nums[i+1]
+            if result > 0:
+                return expr, result
+
+def load_all_math_classes():
+    # 只需扫描当前文件中的 BaseMath 子类，无需动态导入其它模块
+    pass
+
+def get_math_class(paper_type):
+    load_all_math_classes()
+    for cls in BaseMath.__subclasses__():
+        if getattr(cls, "paper_type", None) == paper_type:
+            return cls
+    raise ValueError(f"未知的试卷类型: {paper_type}")
+
+def gen_math_html_text(paper_type=PaperType.SIMPLE, saveFile=False):
+    math_cls = get_math_class(paper_type)
+    math_obj = math_cls()
+    return math_obj.gen_html(saveFile=saveFile)
 
 if __name__ == "__main__":
-    html = gen_math_html_text(True)
-    print("试卷已生成：百位数加减法试卷.html")
+    gen_math_html_text(PaperType.SIMPLE, True)
+    gen_math_html_text(PaperType.MIXED, True)
